@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:text2img/credentials.dart';
 import 'package:text2img/logDrawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -46,13 +47,12 @@ class _HomePageState extends State<HomePage>
 
     const String apiUrl =
         'https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image';
-    const String apiKey =
-        ''; // Replace with your API key
+
     print("requesting: $apiUrl \n $text");
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {
-        'Authorization': 'Bearer $apiKey',
+        'Authorization': 'Bearer ${Credentials.apiKey}',
         'Content-Type': 'application/json',
       },
       body: jsonEncode({'inputs': text}),
