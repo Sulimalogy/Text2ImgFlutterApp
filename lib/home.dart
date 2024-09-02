@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:text2img/logDrawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,7 +20,6 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   Uint8List? _imageData;
-  final List _imageHistory = [];
   bool _loading = false;
   final AudioPlayer _audioPlayer = AudioPlayer();
 
@@ -46,7 +46,8 @@ class _HomePageState extends State<HomePage>
 
     const String apiUrl =
         'https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image';
-    const String apiKey = ''; // Replace with your API key
+    const String apiKey =
+        ''; // Replace with your API key
     print("requesting: $apiUrl \n $text");
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -82,19 +83,16 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*drawer: Drawer(
-        child: Column(children: [
-          for (var i in _imageHistory)
-            Image.memory(
-              _imageData!,
-              fit: BoxFit.contain,
-              semanticLabel: i.toString(),
-            ),
-        ]),
-      ),*/
+      drawer: const LogDrawer(),
       appBar: AppBar(
         title: const Text('Text2Img'),
         centerTitle: true,
+        leading: Builder(builder: (BuildContext context2) {
+          return IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => Scaffold.of(context2).openDrawer(),
+          );
+        }),
       ),
       body: Stack(
         children: [
@@ -107,7 +105,7 @@ class _HomePageState extends State<HomePage>
                   controller: _controller,
                   style: const TextStyle(color: Colors.white),
                   decoration: const InputDecoration(
-                    labelText: 'Enter text',
+                    labelText: 'Enter text to generate image',
                     labelStyle: TextStyle(color: Colors.white70),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white70),
