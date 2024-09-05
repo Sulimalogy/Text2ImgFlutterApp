@@ -117,34 +117,29 @@ class _HomePageState extends State<HomePage>
                 TextField(
                   controller: _controller,
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Enter text to generate image',
-                    labelStyle: TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white70),
                     ),
-                    focusedBorder: OutlineInputBorder(
+                    focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.deepPurpleAccent),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 30),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                    suffix: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_controller.text.isNotEmpty) {
+                          _generateImage(_controller.text);
+                        }
+                      },
+                      child: const Icon(Icons.image),
                     ),
-                  ),
-                  onPressed: () {
-                    if (_controller.text.isNotEmpty) {
-                      _generateImage(_controller.text);
-                    }
-                  },
-                  child: const Text(
-                    'Generate Image',
-                    style: TextStyle(fontSize: 18),
                   ),
                 ),
                 const SizedBox(height: 20),
