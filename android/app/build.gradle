@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "me.sulimalogy.text2img.text2img"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {

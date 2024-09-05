@@ -6,9 +6,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:text2img/credentials.dart';
 import 'package:text2img/logDrawer.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,19 +22,38 @@ class _HomePageState extends State<HomePage>
   final TextEditingController _controller = TextEditingController();
   Uint8List? _imageData;
   bool _loading = false;
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  // final AudioPlayer _audioPlayer = AudioPlayer();
+  var random = Random();
+  late Directory tmpDir;
+  late Directory genImgDir;
+  List imgs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      tmpDir = await getTemporaryDirectory();
+      print("tmpDir: ${tmpDir.path}");
+      genImgDir = Directory("${tmpDir.path}/text2img/generatedImgs/");
+      print("All tmpDir: ${genImgDir.path}");
+
+      await genImgDir.create(recursive: true);
+    });
+  }
 
   @override
   void dispose() {
     _controller.dispose();
-    _audioPlayer.dispose();
     super.dispose();
   }
 
-  String getRandString(int len) {
-    var random = Random.secure();
-    var values = List<int>.generate(len, (i) => random.nextInt(255));
-    return base64UrlEncode(values);
+  void getImgs() {
+    imgs = genImgDir
+        .listSync()
+        .map((item) => item.path)
+        .where((item) => item.endsWith(".png"))
+        .toList(growable: false);
+    print(imgs);
   }
 
   Future<void> _generateImage(String text) async {
@@ -42,13 +61,9 @@ class _HomePageState extends State<HomePage>
       _loading = true;
     });
 
-    // Play a sound effect when the user presses the button
-    // await _audioPlayer.play('sounds/click.mp3');
-
     const String apiUrl =
         'https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image';
 
-    print("requesting: $apiUrl \n $text");
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {
@@ -57,25 +72,21 @@ class _HomePageState extends State<HomePage>
       },
       body: jsonEncode({'inputs': text}),
     );
-    print("response.statusCode : ${response.statusCode}");
 
     if (response.statusCode == 200) {
+      getImgs();
       setState(() {
         _imageData = response.bodyBytes; // Extract the binary image data
         _loading = false;
-
-        // _audioPlayer
-        //    .play('sounds/success.mp3'); // Play success sound
-        // _imageHistory
-        String name = getRandString(20);
-        File('$name.png').writeAsBytes(response.bodyBytes);
       });
+      var filename = '${genImgDir.path}/${random.nextInt(100)}.png';
+      final file = File(filename);
+      await file.writeAsBytes(response.bodyBytes);
     } else {
       setState(() {
         _loading = false;
         _imageData = null;
       });
-      // _audioPlayer.play('sounds/error.mp3'); // Play error sound
       throw Exception('Failed to generate image');
     }
   }
@@ -83,7 +94,9 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const LogDrawer(),
+      drawer: LogDrawer(
+        imageHistory: imgs,
+      ),
       appBar: AppBar(
         title: const Text('Text2Img'),
         centerTitle: true,
