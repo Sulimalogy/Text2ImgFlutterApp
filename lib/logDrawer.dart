@@ -16,6 +16,7 @@ class _LogDrawerState extends State<LogDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+        child: SingleChildScrollView(
       child: Column(children: [
         for (var i in widget.imageHistory)
           Image.file(
@@ -24,6 +25,6 @@ class _LogDrawerState extends State<LogDrawer> {
             semanticLabel: i.toString(),
           ),
       ]),
-    );
+    ));
   }
 }
