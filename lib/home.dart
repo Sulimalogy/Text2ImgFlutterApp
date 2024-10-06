@@ -1,14 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:text2img/credentials.dart';
-import 'package:text2img/logDrawer.dart';
+import 'package:text2img/log_drawer.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:text2img/api_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,7 +19,6 @@ class _HomePageState extends State<HomePage>
   Uint8List? _imageData;
   bool _loading = false;
   // final AudioPlayer _audioPlayer = AudioPlayer();
-  var random = Random();
   late Directory tmpDir;
   late Directory genImgDir;
   List imgs = [];
@@ -33,10 +28,7 @@ class _HomePageState extends State<HomePage>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       tmpDir = await getTemporaryDirectory();
-      print("tmpDir: ${tmpDir.path}");
       genImgDir = Directory("${tmpDir.path}/text2img/generatedImgs/");
-      print("All tmpDir: ${genImgDir.path}");
-
       await genImgDir.create(recursive: true);
     });
   }
@@ -53,7 +45,6 @@ class _HomePageState extends State<HomePage>
         .map((item) => item.path)
         .where((item) => item.endsWith(".png"))
         .toList(growable: false);
-    print(imgs);
   }
 
   Future<void> _generateImage(String text) async {
@@ -61,34 +52,12 @@ class _HomePageState extends State<HomePage>
       _loading = true;
     });
 
-    const String apiUrl =
-        'https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image';
-
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Authorization': 'Bearer ${Credentials.apiKey}',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({'inputs': text}),
-    );
-
-    if (response.statusCode == 200) {
-      getImgs();
-      setState(() {
-        _imageData = response.bodyBytes; // Extract the binary image data
-        _loading = false;
-      });
-      var filename = '${genImgDir.path}/${random.nextInt(100)}.png';
-      final file = File(filename);
-      await file.writeAsBytes(response.bodyBytes);
-    } else {
-      setState(() {
-        _loading = false;
-        _imageData = null;
-      });
-      throw Exception('Failed to generate image');
-    }
+    getImgs();
+    Uint8List x = await Service.generateImg(text, genImgDir);
+    setState(() {
+      _imageData = x; // Extract the binary image data
+      _loading = false;
+    });
   }
 
   @override
@@ -128,12 +97,11 @@ class _HomePageState extends State<HomePage>
                     ),
                     suffix: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: _loading ? null :() {
                         if (_controller.text.isNotEmpty) {
                           _generateImage(_controller.text);
                         }
