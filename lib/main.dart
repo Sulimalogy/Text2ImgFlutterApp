@@ -14,7 +14,7 @@ class Text2ImgApp extends StatelessWidget {
       title: 'Text to Image Generator',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const HomePage(),
