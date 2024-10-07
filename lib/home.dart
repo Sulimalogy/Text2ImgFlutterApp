@@ -64,28 +64,18 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleTextStyle: const TextStyle(color: Colors.deepPurpleAccent),
-        backgroundColor: Colors.white,
-        title: const Text('Text2Img',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        centerTitle: true,
-        leading: Builder(builder: (BuildContext context2) {
-          return IconButton(
-            color: Colors.deepPurpleAccent,
-            icon: const Icon(Icons.history),
-            onPressed: () => Scaffold.of(context2).openDrawer(),
-          );
-        }),
-      ),
+          titleTextStyle: const TextStyle(color: Colors.deepPurpleAccent),
+          backgroundColor: Colors.white,
+          title: const Text('Text2Img',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          centerTitle: true),
       body: Stack(
         children: [
-          // _backgroundEffect(),
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16,top: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
             child: Stack(children: [
               _loading ? _loadingScreen() : const SizedBox(),
-              SizedBox(
-                height: double.infinity,
+              SingleChildScrollView(
                 child: Column(
                   children: [
                     TextField(
@@ -152,33 +142,31 @@ class _HomePageState extends State<HomePage>
                         children: [
                           Text("History",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                                  fontWeight: FontWeight.bold, fontSize: 15)),
                         ]),
                     const SizedBox(height: 10),
                     imgs.isEmpty ? const Text("No Images") : const SizedBox(),
-                    Expanded(
-                      child: GridView.builder(
-                        physics: const NeverScrollableScrollPhysics() ,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, // 2 pictures per row
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 10.0,
-                          childAspectRatio:
-                              0.6, // This allows variable height but fixed width
-                        ),
-                        itemCount: imgs.length,
-                        itemBuilder: (context, index) {
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.file(
-                              File(imgs[index]),
-                              fit: BoxFit.contain,
-                              semanticLabel: index.toString(),
-                            ), // Cover ensures variable height handling
-                          );
-                        },
+                    GridView.builder(
+                      shrinkWrap:
+                          true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, // 2 pictures per row
+                        mainAxisSpacing: 5.0,
+                        crossAxisSpacing: 10.0,
                       ),
+                      itemCount: imgs.length,
+                      itemBuilder: (context, index) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.file(
+                            File(imgs[index]),
+                            fit: BoxFit.contain,
+                            semanticLabel: index.toString(),
+                          ), 
+                        );
+                      },
                     ),
                   ],
                 ),
