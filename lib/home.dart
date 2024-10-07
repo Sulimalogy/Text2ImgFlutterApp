@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:text2img/log_drawer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:text2img/api_service.dart';
 
@@ -30,6 +29,7 @@ class _HomePageState extends State<HomePage>
       tmpDir = await getTemporaryDirectory();
       genImgDir = Directory("${tmpDir.path}/text2img/generatedImgs/");
       await genImgDir.create(recursive: true);
+      getImgs();
     });
   }
 
@@ -63,13 +63,11 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: LogDrawer(
-        imageHistory: imgs,
-      ),
       appBar: AppBar(
         titleTextStyle: const TextStyle(color: Colors.deepPurpleAccent),
         backgroundColor: Colors.white,
-        title: const Text('Text2Img'),
+        title: const Text('Text2Img',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         centerTitle: true,
         leading: Builder(builder: (BuildContext context2) {
           return IconButton(
@@ -83,100 +81,109 @@ class _HomePageState extends State<HomePage>
         children: [
           // _backgroundEffect(),
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _loading ? _loadingScreen() : const SizedBox(),
-                TextField(
-                  controller: _controller,
-                  style:
-                      const TextStyle(color: Color.fromRGBO(124, 77, 255, 1)),
-                  decoration: const InputDecoration(
-                    labelText: 'Enter text to generate image',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.deepPurpleAccent),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _imageData != null
-                    ? Expanded(
-                        child: Center(
-                          child: Image.memory(
-                            _imageData!,
-                            fit: BoxFit.contain,
-                          ),
+            padding: const EdgeInsets.only(left: 16, right: 16,top: 16),
+            child: Stack(children: [
+              _loading ? _loadingScreen() : const SizedBox(),
+              SizedBox(
+                height: double.infinity,
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _controller,
+                      style: const TextStyle(
+                          color: Color.fromRGBO(124, 77, 255, 1)),
+                      decoration: const InputDecoration(
+                        labelText: 'Enter text to generate image',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
-                      )
-                    : const Expanded(
-                        child: Center(
-                          child: Text(
-                            'Enter text to generate an image',
-                            style:
-                                TextStyle(color: Colors.white70, fontSize: 16),
-                          ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.deepPurpleAccent),
                         ),
                       ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                  onPressed: _loading
-                      ? null
-                      : () {
-                          if (_controller.text.isNotEmpty) {
-                            _generateImage(_controller.text);
-                          }
+                    const SizedBox(height: 15),
+                    _imageData != null
+                        ? SizedBox(
+                            child: Center(
+                              child: Image.memory(
+                                _imageData!,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(
+                            height: 250,
+                            child: Center(
+                              child: Text(
+                                'Enter text to generate an image',
+                                style: TextStyle(
+                                    color: Colors.deepPurpleAccent,
+                                    fontSize: 16),
+                              ),
+                            ),
+                          ),
+                    const SizedBox(height: 15),
+                    SizedBox(
+                      height: 40.0,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        onPressed: _loading
+                            ? null
+                            : () {
+                                if (_controller.text.isNotEmpty) {
+                                  _generateImage(_controller.text);
+                                }
+                              },
+                        child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [Text("Generate"), Icon(Icons.image)]),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("History",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                        ]),
+                    const SizedBox(height: 10),
+                    imgs.isEmpty ? const Text("No Images") : const SizedBox(),
+                    Expanded(
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics() ,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // 2 pictures per row
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio:
+                              0.6, // This allows variable height but fixed width
+                        ),
+                        itemCount: imgs.length,
+                        itemBuilder: (context, index) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.file(
+                              File(imgs[index]),
+                              fit: BoxFit.contain,
+                              semanticLabel: index.toString(),
+                            ), // Cover ensures variable height handling
+                          );
                         },
-                  child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Text("Generate"), Icon(Icons.image)]),
-                ),
-                const SizedBox(height: 10),
-                const Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text("History",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
-                    ]),
-                const SizedBox(height: 20),
-                imgs.isEmpty ? const Text("No Images") : const SizedBox(),
-                /*Expanded(
-                flex: 1,
-                child: SingleChildScrollView(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // 2 pictures per row
-                      mainAxisSpacing: 10.0,
-                      crossAxisSpacing: 10.0,
-                      childAspectRatio:
-                          0.6, // This allows variable height but fixed width
+                      ),
                     ),
-                    itemCount: imgs.length,
-                    itemBuilder: (context, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.file(
-                          File(imgs[index]),
-                          fit: BoxFit.contain,
-                          semanticLabel: index.toString(),
-                        ), // Cover ensures variable height handling
-                      );
-                    },
-                  ),
+                  ],
                 ),
-                ),
-                */
-              ],
-            ),
+              ),
+            ]),
           ),
         ],
       ),
@@ -184,12 +191,12 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _loadingScreen() {
-    double height = MediaQuery.of(context).size.height;
+    double height = MediaQuery.of(context).size.height - 20;
     double width = MediaQuery.of(context).size.width;
     return Container(
       height: height,
       width: width,
-      color: Colors.transparent,
+      color: const Color.fromARGB(148, 254, 254, 254),
       child: const Center(
         child: SpinKitFadingCircle(
           color: Colors.deepPurpleAccent,
