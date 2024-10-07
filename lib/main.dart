@@ -12,7 +12,7 @@ class Text2ImgApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Text to Image Generator',
+      title: 'Text2Img',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         brightness: Brightness.light,
