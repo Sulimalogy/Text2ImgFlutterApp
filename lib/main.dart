@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:text2img/home.dart';
 
-void main() {
+void main() async {
+  await Future.delayed(const Duration(seconds: 5));
   runApp(const Text2ImgApp());
 }
 
