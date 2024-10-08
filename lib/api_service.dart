@@ -22,18 +22,13 @@ class Service {
       body: jsonEncode({'inputs': text}),
     );
     if (response.statusCode == 200) {
-      // getImgs();
-      //setState(() {
-      imageData = response.bodyBytes; // Extract the binary image data
-      //});
+      imageData = response.bodyBytes;
       var random = Random();
-      var filename = '${genImgDir.path}/${random.nextInt(100)}.png';
+      var filename = '${genImgDir.path}/${random.nextInt(1000)}.png';
       final file = File(filename);
       await file.writeAsBytes(response.bodyBytes);
     } else {
-      //setState(() {
       imageData = null;
-      // });
       throw Exception('Failed to generate image');
     }
     return imageData;
