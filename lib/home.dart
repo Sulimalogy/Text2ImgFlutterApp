@@ -62,6 +62,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
           titleTextStyle: const TextStyle(color: Colors.deepPurpleAccent),
@@ -70,12 +72,12 @@ class _HomePageState extends State<HomePage>
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           centerTitle: true),
       body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-            child: Stack(children: [
-              _loading ? _loadingScreen() : const SizedBox(),
-              SingleChildScrollView(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
                     TextField(
@@ -147,8 +149,7 @@ class _HomePageState extends State<HomePage>
                     const SizedBox(height: 10),
                     imgs.isEmpty ? const Text("No Images") : const SizedBox(),
                     GridView.builder(
-                      shrinkWrap:
-                          true,
+                      shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -164,33 +165,28 @@ class _HomePageState extends State<HomePage>
                             File(imgs[index]),
                             fit: BoxFit.contain,
                             semanticLabel: index.toString(),
-                          ), 
+                          ),
                         );
                       },
                     ),
                   ],
                 ),
               ),
-            ]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _loadingScreen() {
-    double height = MediaQuery.of(context).size.height - 20;
-    double width = MediaQuery.of(context).size.width;
-    return Container(
-      height: height,
-      width: width,
-      color: const Color.fromARGB(148, 254, 254, 254),
-      child: const Center(
-        child: SpinKitFadingCircle(
-          color: Colors.deepPurpleAccent,
-          size: 100.0,
-        ),
-      ),
+            ),
+            _loading
+                ? Container(
+                    height: height,
+                    width: width,
+                    color: const Color.fromARGB(148, 254, 254, 254),
+                    child: const Center(
+                      child: SpinKitFadingCircle(
+                        color: Colors.deepPurpleAccent,
+                        size: 100.0,
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
+          ]),
     );
   }
 }
