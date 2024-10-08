@@ -16,7 +16,6 @@ The app leverages Flufter for its frontend and a backend API for image generatio
 ├── lib/
 │   ├── main.dart           # Main entry point
 │   ├── home.dart           # home screen
-│   ├── log_drawer.dart     # drawer to show history and saved images management 
 │   ├── credentials.dart    # A file you should create see how to use
 │   └── api_service.dart    # API requests for generating images
 ├── README.md               # Project documentation
