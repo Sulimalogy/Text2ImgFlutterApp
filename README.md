@@ -1,4 +1,5 @@
 # Text2Img Flutter App
+![app designs](https://raw.githubusercontent.com/Sulimalogy/Text2ImgFlutterApp/refs/heads/main/designs/Z.png)
 
 This app is a Flutter based application that generates images from user-provided text using online machine learning models. It supports sving generated images, maintaining a history of images, and reviewing past creations. 
 
@@ -44,9 +45,6 @@ The app leverages Flufter for its frontend and a backend API for image generatio
     ```
 6. Enter a description in the text input field and generate an image. Use the save button to store the image locally and review it later in the history tab.
 
-## Examples
-- Input: "A beautiful sunset over the ocean"
-  Output: (Image of sunset over the ocean)
   
 ## References
 - Flutter documentation: [https://flutter.dev/docs](https://flutter.dev/docs)
