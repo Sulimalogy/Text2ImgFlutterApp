@@ -43,7 +43,7 @@ The app leverages Flufter for its frontend and a backend API for image generatio
     ```bash
     flutter build apk --release
     ```
-6. Enter a description in the text input field and generate an image. Use the save button to store the image locally and review it later in the history tab.
+6. Enter a description in the text input field and generate an image. 
 
   
 ## References
