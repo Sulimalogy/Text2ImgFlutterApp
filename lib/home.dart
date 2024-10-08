@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage>
   late Directory tmpDir;
   late Directory genImgDir;
   List imgs = [];
-
+  ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -78,6 +78,7 @@ class _HomePageState extends State<HomePage>
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: SingleChildScrollView(
+                controller: _scrollController,
                 child: Column(
                   children: [
                     TextField(
@@ -110,10 +111,9 @@ class _HomePageState extends State<HomePage>
                             height: 250,
                             child: Center(
                               child: Text(
-                                'Enter text to generate an image',
-                                style: TextStyle(
-                                    color: Colors.deepPurpleAccent,
-                                    fontSize: 16),
+                                'Image Here',
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 16),
                               ),
                             ),
                           ),
@@ -161,10 +161,23 @@ class _HomePageState extends State<HomePage>
                       itemBuilder: (context, index) {
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: Image.file(
-                            File(imgs[index]),
-                            fit: BoxFit.contain,
-                            semanticLabel: index.toString(),
+                          child: GestureDetector(
+                            onTap: () async {
+                              File? image = File(imgs[index]);
+                              var x = await image.readAsBytes();
+                              setState(() {
+                                _imageData = x;
+                                _scrollController.animateTo(
+                                    _scrollController.position.minScrollExtent,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              });
+                            }, // Image tapped
+                            child: Image.file(
+                              File(imgs[index]),
+                              fit: BoxFit.contain,
+                              semanticLabel: index.toString(),
+                            ),
                           ),
                         );
                       },

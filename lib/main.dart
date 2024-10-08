@@ -13,6 +13,7 @@ class Text2ImgApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Text2Img',
+      debugShowCheckedModeBanner: false, // Add this line
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         brightness: Brightness.light,
